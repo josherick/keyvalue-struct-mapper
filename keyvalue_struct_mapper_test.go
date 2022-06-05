@@ -1,4 +1,4 @@
-package unmarshal
+package struct_mapper
 
 import (
 	"fmt"
