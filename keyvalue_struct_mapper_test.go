@@ -62,11 +62,12 @@ func (staticStructMapper) Get(key string) (string, bool) {
 	return "", false
 }
 
-func (s staticStructMapper) Set(key string, value string) {
+func (s staticStructMapper) Set(key string, value string) error {
 	if val, ok := s.setValues[key]; ok {
 		panic(fmt.Sprintf("key %s was already set to %s. Tried to set to %s.", key, val, value))
 	}
 	s.setValues[key] = value
+	return nil
 }
 
 func TestUnmarshal(t *testing.T) {

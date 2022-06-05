@@ -76,7 +76,7 @@ type KeyProcessor interface {
 
 type KeyValueSetter interface {
 	// Sets the value for the provided key.
-	Set(key string, value string)
+	Set(key string, value string) error
 }
 
 func (e *ParseError) Error() string {
@@ -235,7 +235,10 @@ func (u *Mapper) Marshal(spec interface{}) error {
 	infos, err := u.gatherInfo("", spec)
 
 	for _, info := range infos {
-		u.setter.Set(info.Key, fmt.Sprintf("%v", info.Field.Interface()))
+		e := u.setter.Set(info.Key, fmt.Sprintf("%v", info.Field.Interface()))
+		if e != nil {
+			return e
+		}
 	}
 
 	return err

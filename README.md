@@ -66,8 +66,9 @@ func (staticStructMapper) Get(key string) (string, bool) {
 
 // Called for each key in the struct after calling Marshal.
 // Can set data store here with serialized values from the struct.
-func (s staticStructMapper) Set(key string, value string) {
+func (s staticStructMapper) Set(key string, value string) error {
 	fmt.Printf("Setting %v to key %s\n", key, value)
+	return nil
 }
 
 func main() {
