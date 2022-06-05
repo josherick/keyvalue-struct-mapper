@@ -1,25 +1,27 @@
 # Key/Value Struct Mapper
 
-Based on [Kelsey Hightower's
-envconfig](https://github.com/kelseyhightower/envconfig), though doesn't
-support all the features of that package.
-
+### Unpack into golang struct
 Allows easy mapping of key/value data (e.g. from a database) into a typed golang
 struct. When data comes back from the store untyped (i.e. as a string), saves a
 lot of boilerplate.
 
+### "Repack" to key/value pairs based on golang struct tags
 Data can also be "repacked" from the struct into your database.
 
-Especially useful with Redis, but there's a bunch of different uses.
-
-Not entirely sure if "marshal"/"unmarshal" are the technically correct terms
-here, but seemed close enough.
+### Other Notes
+Especially useful with Redis, but there's a bunch of different uses.  Not
+entirely sure if "marshal"/"unmarshal" are the technically correct terms here,
+but seemed close enough.
 
 Supports the types in the example below (and tests). Other types have not been
 tested.
 
+Based on [Kelsey Hightower's
+envconfig](https://github.com/kelseyhightower/envconfig), though doesn't
+support all the features of that package.
+
 Example Usage:
-```
+```golang
 import (
 	"fmt"
 	"strings"
