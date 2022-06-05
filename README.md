@@ -44,7 +44,7 @@ type config struct {
 type staticStructMapper string
 
 // Do any processing you'd like to the key specified in the struct tag. For
-example, here, we are substituting an ID.
+// example, here, we are substituting an ID.
 func (s staticStructMapper) ProcessKey(key string) string {
 	return strings.Replace(key, "%s", string(s), -1)
 }
