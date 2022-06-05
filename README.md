@@ -67,7 +67,14 @@ func (staticStructMapper) Get(key string) (string, bool) {
 // Called for each key in the struct after calling Marshal.
 // Can set data store here with serialized values from the struct.
 func (s staticStructMapper) Set(key string, value string) error {
-	fmt.Printf("Setting %v to key %s\n", key, value)
+	fmt.Printf("Setting %s to key %s\n", value, key)
+	return nil
+}
+
+// Called for each key in the struct after calling Marshal.
+// Can set data store here with serialized values from the struct.
+func (s staticStructMapper) SetRaw(key string, value interface{}) error {
+	fmt.Printf("Setting raw value %v to key %s\n", value, key)
 	return nil
 }
 
@@ -88,10 +95,16 @@ func main() {
 Output:
 ```
 Unpacked into c: {TestString:mystring TestBool:false TestBoolWithOne:true TestFloat64:3.141592 TestStruct:{TestInt:42 TestIntWithSubstitution:84}}
-Setting test_string to key mystring
-Setting test-bool to key false
-Setting test-bool-with-one to key true
-Setting test-float64 to key 3.141592
+Setting mystring to key test_string
+Setting raw value mystring to key test_string
+Setting false to key test-bool
+Setting raw value false to key test-bool
+Setting true to key test-bool-with-one
+Setting raw value true to key test-bool-with-one
+Setting 3.141592 to key test-float64
+Setting raw value 3.141592 to key test-float64
 Setting test_int to key 42
-Setting test_int:1234:with_substitution to key 84
+Setting raw value test_int to key 42
+Setting 84 to key test_int:1234:with_substitution
+Setting raw value 84 to key test_int:1234:with_substitution
 ```

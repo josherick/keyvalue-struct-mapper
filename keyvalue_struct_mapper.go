@@ -48,17 +48,20 @@ type Setter interface {
 type Mapper struct {
 	getter    KeyValueGetter
 	setter    KeyValueSetter
+	rawSetter KeyValueRawSetter
 	processor KeyProcessor
 }
 
 func New(
 	getter KeyValueGetter,
 	setter KeyValueSetter,
+	rawSetter KeyValueRawSetter,
 	processor KeyProcessor,
 ) *Mapper {
 	return &Mapper{
 		getter,
 		setter,
+		rawSetter,
 		processor,
 	}
 }
@@ -72,6 +75,11 @@ type KeyProcessor interface {
 	// Make any modifications to the key desired - for example, replacing a
 	// format identifier with an ID.
 	ProcessKey(key string) string
+}
+
+type KeyValueRawSetter interface {
+	// Sets the value for the provided key.
+	SetRaw(key string, value interface{}) error
 }
 
 type KeyValueSetter interface {
@@ -160,7 +168,9 @@ func (u *Mapper) gatherInfo(prefix string, spec interface{}) ([]varInfo, error) 
 			info.Key = fmt.Sprintf("%s_%s", prefix, info.Key)
 		}
 		if info.Alt != "" && f.Kind() != reflect.Struct {
-			info.Key = u.processor.ProcessKey(info.Key)
+			if u.processor != nil {
+				info.Key = u.processor.ProcessKey(info.Key)
+			}
 			infos = append(infos, info)
 		}
 
@@ -185,6 +195,9 @@ func (u *Mapper) gatherInfo(prefix string, spec interface{}) ([]varInfo, error) 
 
 // Process populates the specified struct based on KeyValueGetter
 func (u *Mapper) Unmarshal(spec interface{}) error {
+	if u.getter == nil {
+		return errors.New("Must have getter for unmarshaling")
+	}
 	infos, err := u.gatherInfo("", spec)
 
 	for _, info := range infos {
@@ -232,12 +245,23 @@ func (u *Mapper) MustUnmarshal(spec interface{}) {
 
 // Process populates the specified struct based on KeyValueGetter
 func (u *Mapper) Marshal(spec interface{}) error {
+	if u.setter == nil && u.rawSetter == nil {
+		return errors.New("Must have setter or explicitSetter for unmarshaling")
+	}
 	infos, err := u.gatherInfo("", spec)
 
 	for _, info := range infos {
-		e := u.setter.Set(info.Key, fmt.Sprintf("%v", info.Field.Interface()))
-		if e != nil {
-			return e
+		if u.setter != nil {
+			e := u.setter.Set(info.Key, fmt.Sprintf("%v", info.Field.Interface()))
+			if e != nil {
+				return e
+			}
+		}
+		if u.rawSetter != nil {
+			e := u.rawSetter.SetRaw(info.Key, info.Field.Interface())
+			if e != nil {
+				return e
+			}
 		}
 	}
 
