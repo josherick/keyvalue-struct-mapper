@@ -43,12 +43,14 @@ type config struct {
 // Data provider and consumer for mapper.
 type staticStructMapper string
 
+// Do any processing you'd like to the key specified in the struct tag. For
+example, here, we are substituting an ID.
 func (s staticStructMapper) ProcessKey(key string) string {
 	return strings.Replace(key, "%s", string(s), -1)
 }
 
 // Called for each key in the struct after calling Unmarshal.
-// Returns a value from data store (in this case, stati
+// Returns a value from data store (in this case, a static value).
 func (staticStructMapper) Get(key string) (string, bool) {
 	store := map[string]string{
 		"test_string":                     "mystring",
