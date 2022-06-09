@@ -9,9 +9,9 @@ lot of boilerplate.
 Data can also be "repacked" from the struct into your database.
 
 ### Other Notes
-Especially useful with Redis, but there's a bunch of different uses.  Not
-entirely sure if "marshal"/"unmarshal" are the technically correct terms here,
-but seemed close enough.
+Especially useful for unpacking multiple Redis keys into a struct, but there's
+a bunch of different uses.  Not entirely sure if "marshal"/"unmarshal" are the
+technically correct terms here, but seemed close enough.
 
 Supports the types in the example below (and tests). Other types have not been
 tested.
@@ -72,7 +72,7 @@ func (s staticStructMapper) Set(key string, value string) error {
 }
 
 // Called for each key in the struct after calling Marshal.
-// Can set data store here with serialized values from the struct.
+// Can set data store here with interface{} typed values from the struct.
 func (s staticStructMapper) SetRaw(key string, value interface{}) error {
 	fmt.Printf("Setting raw value %v to key %s\n", value, key)
 	return nil
@@ -83,12 +83,12 @@ func main() {
 	var c config
 
 	// Populate c with values from our data store (a map, `store`)
-	struct_mapper.New(s, s, s).Unmarshal(&c)
+	struct_mapper.New(s, s, nil, nil).Unmarshal(&c)
 	fmt.Printf("Unpacked into c: %+v\n", c)
 
 	// Will print each time we set a value. We could instead put this back into
 	// the store.
-	struct_mapper.New(s, s, s).Marshal(&c)
+	struct_mapper.New(s, nil, s, s).Marshal(&c)
 }
 ```
 
